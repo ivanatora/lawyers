@@ -33,6 +33,9 @@ class AppointmentsController extends Controller
                 if ($aSorters[0]['property'] == 'lawyer_names') {
                     $query->orderBy('l.first_name', $aSorters[0]['direction']);
                     $query->orderBy('l.last_name', $aSorters[0]['direction']);
+                } else if ($aSorters[0]['property'] == 'customer_names') {
+                    $query->orderBy('c.first_name', $aSorters[0]['direction']);
+                    $query->orderBy('c.last_name', $aSorters[0]['direction']);
                 } else {
                     $aOrder['field']     = $aSorters[0]['property'];
                     $aOrder['direction'] = $aSorters[0]['direction'];
@@ -44,7 +47,7 @@ class AppointmentsController extends Controller
 //            $query = Appointment::orderBy($aOrder['field'], $aOrder['direction']);
 //        }
 
-        $aWhere     = [];
+        $aWhere = [];
 //        $aQueryData = $request->all();
 //        foreach ($aQueryData as $sKey => $sValue) {
 //            if (preg_match('/^query_(.+?)$/', $sKey, $aMatches)) {
@@ -70,6 +73,14 @@ class AppointmentsController extends Controller
             $query->where(function($q) use ($sQueryLawyer) {
                 $q->where('l.first_name', 'LIKE', '%'.$sQueryLawyer.'%');
                 $q->orWhere('l.last_name', 'LIKE', '%'.$sQueryLawyer.'%');
+            });
+        }
+
+        $sQueryLawyer = $request->input('query_customer');
+        if ($sQueryLawyer) {
+            $query->where(function($q) use ($sQueryLawyer) {
+                $q->where('c.first_name', 'LIKE', '%'.$sQueryLawyer.'%');
+                $q->orWhere('c.last_name', 'LIKE', '%'.$sQueryLawyer.'%');
             });
         }
 //        Log::info(['w' => $aWhere, 'qd' => $aQueryData]);
@@ -150,7 +161,7 @@ class AppointmentsController extends Controller
         $oUser = User::whereId(Auth::user()->id)->first();
 
         $aWhere = [
-            'id', '=', $id
+            ['id', '=', $id]
         ];
         // allow access to only his own records
         if ($oUser->type == 'customer') {
@@ -160,7 +171,7 @@ class AppointmentsController extends Controller
             $aWhere[] = ['lawyer_user_id', '=', $oUser->id];
         }
 
-        $oRecord = Appointment::where($aWhere)->get();
+        $oRecord = Appointment::where($aWhere)->first();
         if (!$oRecord) {
             return response()->json(['success' => false, 'error' => 'Record not found']);
         }
