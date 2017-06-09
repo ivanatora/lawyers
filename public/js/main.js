@@ -48,44 +48,50 @@ Ext.application({
                                 res = Ext.decode(res.responseText);
                                 sToken = res.access_token;
 
-//                                Ext.Ajax.setDefaultXhrHeader('Authorization: Bearer ' + res.access_token);
-//                                Ext.Ajax.setDefaultPostHeader('Authorization: Bearer ' + res.access_token);
                                 Ext.Ajax.setDefaultHeaders({
                                     'Authorization': 'Bearer ' + sToken
                                 })
 
-                                setTimeout(function () {
-                                    me.getUser();
-                                }, 1000)
+                                Ext.Ajax.request({
+                                    url: '/api/v1/me',
+                                    success: function (res) {
+                                        res = Ext.decode(res.responseText);
+                                        if (res.type == 'customer') {
+                                            me.createCustomerWindow();
+                                        }
+                                        if (res.type == 'lawyer') {
+                                            me.createLawyerWindow();
+                                        }
+                                        win.hide();
+                                    },
+                                    failure: function (res) {
+                                        console.log('fail', res)
+                                    }
+                                })
 
                             },
                             failure: function (res) {
-                                Ext.Msg.alert('Wrong credentials');
+                                Ext.Msg.alert('Error', 'Wrong credentials');
                             }
                         })
                     }
                 }
             ]
         })
-        Ext.create('Ext.window.Window', {
+        
+        var win = Ext.create('Ext.window.Window', {
             title: 'Login',
             closable: false,
             items: [form]
-        }).show();
+        });
+        win.show();
     },
 
-    getUser: function () {
-        Ext.Ajax.request({
-            url: '/api/v1/me',
-//            headers: {
-//                'Authorization': 'Bearer ' + sToken
-//            },
-            success: function (res) {
-                console.log('suc', res)
-            },
-            failure: function (res) {
-                console.log('fail', res)
-            }
-        })
+    createCustomerWindow: function(){
+        
+    },
+    
+    createLawyerWindow: function(){
+        console.log('@TODO: createLawyerWindow');
     }
 });
