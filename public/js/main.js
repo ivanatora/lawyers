@@ -14,23 +14,28 @@ Ext.application({
             items: [
                 {
                     xtype: 'textfield',
-                    fieldLabel: 'Username',
+                    fieldLabel: 'E-mail',
                     name: 'username',
-                    allowEmpty: false
+                    allowBlank: false
                 }, {
                     xtype: 'textfield',
                     fieldLabel: 'Password',
                     name: 'password',
                     inputType: 'password',
-                    allowEmpty: false
+                    allowBlank: false
                 }, {
                     xtype: 'displayfield',
                     fieldLabel: 'Hint',
-                    value: 'Try lawyer/lawyer or customer/customer for demo access'
+                    value: 'Try lawyer@test.com / lawyer or customer@test.com / customer for demo access'
                 }
             ],
             buttons: [
                 {
+                    text: 'Register',
+                    handler: function(){
+                        me.getRegisterWindow();
+                    }
+                },{
                     text: 'Login',
                     formBind: true,
                     reference: 'okButton',
@@ -49,6 +54,7 @@ Ext.application({
                                 sToken = res.access_token;
 
                                 Ext.Ajax.setDefaultHeaders({
+                                    'Content-type': 'application/json',
                                     'Authorization': 'Bearer ' + sToken
                                 })
 
@@ -57,10 +63,10 @@ Ext.application({
                                     success: function (res) {
                                         res = Ext.decode(res.responseText);
                                         if (res.type == 'customer') {
-                                            me.createCustomerWindow();
+                                            me.getCustomerWindow();
                                         }
                                         if (res.type == 'lawyer') {
-                                            me.createLawyerWindow();
+                                            me.getLawyerWindow();
                                         }
                                         win.hide();
                                     },
@@ -82,16 +88,118 @@ Ext.application({
         var win = Ext.create('Ext.window.Window', {
             title: 'Login',
             closable: false,
+            width: 400,
             items: [form]
         });
         win.show();
     },
+    
+    getRegisterWindow: function(){
+        var me = this;
+        
+        var form = Ext.create('Ext.form.Panel', {
+            bodyPadding: 10,
+            defaultButton: 'okButton',
+            referenceHolder: true,
+            defaults: {
+                allowBlank: false
+            },
+            items: [
+                {
+                    xtype: 'textfield',
+                    name: 'first_name',
+                    fieldLabel: 'First name'
+                },{
+                    xtype: 'textfield',
+                    name: 'last_name',
+                    fieldLabel: 'Last name'
+                },{
+                    xtype: 'textfield',
+                    name: 'email',
+                    fieldLabel: 'E-mail',
+                    vtype: 'email'
+                },{
+                    xtype: 'textfield',
+                    name: 'password',
+                    fieldLabel: 'Password',
+                    inputType: 'password'
+                },{
+                    xtype: 'textfield',
+                    name: 'repeat_password',
+                    fieldLabel: 'Repeat password',
+                    inputType: 'password'
+                },{
+                    xtype: 'combo',
+                    store: Ext.create('Ext.data.Store', {
+                        fields: ['id', 'name'],
+                        data: [
+                            ['customer', 'Customer'],
+                            ['lawyer', 'Lawyer']
+                        ]
+                    }),
+                    name: 'type',
+                    fieldLabel: 'User type',
+                    value: 'customer',
+                    valueField: 'id',
+                    displayField: 'name',
+                    forceSelection: true,
+                    editable: false
+                }
+            ],
+            buttons: [
+                {
+                    text: 'Register',
+                    formBind: true,
+                    reference: 'okButton',
+                    handler: function(){
+                        var oValues = this.up('form').getValues();
+                        if (oValues.password != oValues.repeat_password) {
+                            Ext.Msg.alert('Error', 'Password does not match');
+                            return;
+                        }
+                        
+                        Ext.Ajax.request({
+                            url: '/users/register',
+                            jsonData: {
+                                user: oValues
+                            },
+                            success: function (res) {
+                                res = Ext.decode(res.responseText);
+                                if (res.success) {
+                                    Ext.Msg.alert('Done', 'You are now ready to log in');
+                                    win.close();
+                                } else {
+                                    Ext.Msg.alert('Error', res.error);
+                                }
+                            },
+                            failure: function (res) {
+                                res = Ext.decode(res.responseText);
+                                console.log('fail1', res)
+                            }
+                        })
+                    }
+                },{
+                    text: 'Cancel',
+                    handler: function(){
+                        win.close();
+                    }
+                }
+            ]
+        })
+        
+        var win = Ext.create('Ext.window.Window', {
+            title: 'Register',
+            modal: true,
+            items: [form]
+        })
+        win.show();
+    },
 
-    createCustomerWindow: function(){
+    getCustomerWindow: function(){
         
     },
     
-    createLawyerWindow: function(){
+    getLawyerWindow: function(){
         console.log('@TODO: createLawyerWindow');
     }
 });

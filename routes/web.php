@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get('/test', 'TestController@test');
+Route::post('/users/register', 'UsersController@register');
 
 Route::group(['prefix' => 'api/v1', 'middleware' => 'auth:api'], function () {
     Route::get('me', 'UsersController@me');
