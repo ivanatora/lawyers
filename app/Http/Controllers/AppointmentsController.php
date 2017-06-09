@@ -45,19 +45,7 @@ class AppointmentsController extends Controller
         }
 
         $aWhere = [];
-//        $aQueryData = $request->all();
-//        foreach ($aQueryData as $sKey => $sValue) {
-//            if (preg_match('/^query_(.+?)$/', $sKey, $aMatches)) {
-//                $sField = $aMatches[1];
-//                if (!in_array($sField, $this->aAllowedFields)) continue;
-//                if (preg_match('/_id$/', $sField)) {
-//                    $aWhere[] = [$sField, '=', $sValue];
-//                } else {
-//                    $aWhere[] = [$sField, 'LIKE', '%'.$sValue.'%'];
-//                }
-//            }
-//        }
-
+        // show only his own appointments
         if ($oUser->type == 'customer') {
             $aWhere[] = ['customer_user_id', '=', $oUser->id];
         }
@@ -65,6 +53,7 @@ class AppointmentsController extends Controller
             $aWhere[] = ['lawyer_user_id', '=', $oUser->id];
         }
 
+        // grid search
         $sQueryLawyer = $request->input('query_lawyer');
         if ($sQueryLawyer) {
             $query->where(function($q) use ($sQueryLawyer) {
@@ -80,10 +69,10 @@ class AppointmentsController extends Controller
                 $q->orWhere('c.last_name', 'LIKE', '%'.$sQueryLawyer.'%');
             });
         }
-//        Log::info(['w' => $aWhere, 'qd' => $aQueryData]);
 
         $query->where($aWhere);
 
+        // pagination
         $iTotal = $query->count();
 
         $iOffset = $request->input('start', 0);
@@ -98,19 +87,21 @@ class AppointmentsController extends Controller
 //        DB::enableQueryLog();
         $tmp = $query->with('lawyer', 'customer')->get();
 //        Log::info(DB::getQueryLog());
+
         // add some virtual fields
         foreach ($tmp as $idx => $item) {
             $tmp[$idx]->customer_names = $item->customer->first_name.' '.$item->customer->last_name;
             $tmp[$idx]->lawyer_names   = $item->lawyer->first_name.' '.$item->lawyer->last_name;
 
+            // if user is lawyer, check for appointment conflicts
             $bIsConflicting = 0;
             if ($oUser->type == 'lawyer' && $item->status != 'rejected') {
                 $bIsConflicting = Appointment::where([
-                    ['id', '!=', $item->id],
-                    ['lawyer_user_id', '=', $oUser->id],
-                    ['schedule_date', '=', $item->schedule_date],
-                    ['schedule_time', '=', $item->schedule_time],
-                ])->whereIn('status', ['new', 'approved'])->count();
+                        ['id', '!=', $item->id],
+                        ['lawyer_user_id', '=', $oUser->id],
+                        ['schedule_date', '=', $item->schedule_date],
+                        ['schedule_time', '=', $item->schedule_time],
+                    ])->whereIn('status', ['new', 'approved'])->count();
             }
             $tmp[$idx]->is_conflicting = $bIsConflicting;
         }

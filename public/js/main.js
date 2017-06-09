@@ -1,9 +1,3 @@
-var sToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImU5ZTVmM2I1ZTJmNGI2MDA4YmI5NWY2MTczMzAxZjQ1MGYyZWFlYTVlZTI0ZDY5OWUyYzZjNWFiMGQ4YmFmNGJlOTI2NjBlOWFmNWI0MzBlIn0.eyJhdWQiOiIyIiwianRpIjoiZTllNWYzYjVlMmY0YjYwMDhiYjk1ZjYxNzMzMDFmNDUwZjJlYWVhNWVlMjRkNjk5ZTJjNmM1YWIwZDhiYWY0YmU5MjY2MGU5YWY1YjQzMGUiLCJpYXQiOjE0OTcwMDM3ODcsIm5iZiI6MTQ5NzAwMzc4NywiZXhwIjoxNTI4NTM5Nzg3LCJzdWIiOiI0Iiwic2NvcGVzIjpbXX0.M9jaWN99NftGj-Lex0ZhdkfPqPwmeasH5rMlyjqENA0OxTH_M-01_AADmGensf3RJwBmCqO7I3Hm1yZUG6bQg5jCtk4XT3Is7Himw39LSIiBiOYPhxWN3MYK8iQHmr9yaLc6zydfe_QveMqYdxvD5K-2x_7C0VJ84TbdcFZJ4AY6Zw_A9xKcxyNUnKI9zRLf7ajC_H9cAVFH73mfsNM538g_jvR0C6f_oCptTVQgZubr4AUBsYuHUsW66oW4Ty1iwATKofoo-KTvCnBZLHLlL9JZWf_f28LYWnGAh50yDEsMFoSbBCsZy54uWd3Yn0qMUjc05-tPluYgHiloLJJJa75F36Zmu3XKWbSxgi-FkuKN47jsygKOtFKgQQJlEupl0SQRtHozYJ8cbtg2QeAklCgPxhmgTIQg_1vjs9etvx3ZceZMhoZdaJR9jfbOy2Zlb-bW0au06ErShVqxf4BchIb7cH0XgIXDki2N6-b1C2SiUezkjGfcnhUATcSIVOxuuaIXUoy-Rzu7XB88OqvI5oL8NPpI9R0PeIFIvux1i0K2FUbf5-yOJVV9IIWr0tRefSfUOWyzFvXj1c4jfG20OBs0g0IwglERa0PCKpkyeNl2-BbO3LPdGhYMyMNDcns8fkqMY8dtex1GLF_54UMj1R_Q6Wlh5qMerQLE_aeQJXE';
-
-        Ext.Ajax.setDefaultHeaders({
-        'Content-type': 'application/json',
-                'Authorization': 'Bearer ' + sToken
-        })
                                 
 Ext.application({
     name: 'Lawyers and Customers',
