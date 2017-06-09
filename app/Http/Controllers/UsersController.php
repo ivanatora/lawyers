@@ -71,4 +71,30 @@ class UsersController extends Controller
 
         return response()->json(['success' => true, 'data' => $oRecord]);
     }
+
+    public function lawyers(Request $request)
+    {
+        $query = User::where([
+            ['type', '=', 'lawyer']
+        ]);
+
+        $sQueryName = $request->input('query_name', '');
+        if ($sQueryName){
+            $query->where(function($query) use ($sQueryName) {
+                $query->where('first_name', 'LIKE', '%'.$sQueryName.'%');
+                $query->orWhere('last_name', 'LIKE', '%'.$sQueryName.'%');
+            });
+        }
+
+//        DB::enableQueryLog();
+        $tmp = $query->get();
+//        Log::info(DB::getQueryLog());
+
+        // add virtual fields
+        foreach ($tmp as $idx => $item) {
+            $tmp[$idx]->user_names = $item->first_name.' '.$item->last_name;
+        }
+
+        return response()->json(['success' => true, 'data' => $tmp]);
+    }
 }

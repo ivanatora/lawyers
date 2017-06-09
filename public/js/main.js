@@ -1,5 +1,9 @@
-var sToken = '';
-
+var sToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImI4NzYzZjZkNTA2MmJlNzg5NWExMGRjY2VmZWRhM2MwZGUwMjM1NjNlOTM3NGIwNTBjMzNlYmNiYjhkOGI3YTAwOTAxYTcyZmE2MzA5ZmYwIn0.eyJhdWQiOiIyIiwianRpIjoiYjg3NjNmNmQ1MDYyYmU3ODk1YTEwZGNjZWZlZGEzYzBkZTAyMzU2M2U5Mzc0YjA1MGMzM2ViY2JiOGQ4YjdhMDA5MDFhNzJmYTYzMDlmZjAiLCJpYXQiOjE0OTY5OTgzNzEsIm5iZiI6MTQ5Njk5ODM3MSwiZXhwIjoxNTI4NTM0MzcxLCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.lEe8mV20nPDdlARX__xjFtW9ELBlSGptnH1AM_22y5bkUbpETIA39YlFXNbPpJydbx2aciiLZNi1PGWPKxslfsuGc10O-OFI6_9YVm9AjAczxH0wDME4YBeLetMksBJPOupo2X2va8VRyb_cYSD9pnC6vpKiGrCCL9foGYs8IB9qDbQHOCTS07aItixK4HQvnAsoBC0D8UBG15Wb4UMgfjxyLCAuw5iFjfTAyJMTVpyl38qPC4hF-yvuPfRCyigdmtBBm8P2DpzJa9tUiI6zPNMu2XT7ZlC6HdNop1s7RGs5XfTgyNQc9Ym_tCZ7GrUtWznnIN3Jbfh5kzgvolbH_-ou3OVKge4oufcNyuU4Z2uYdoyMJF7XOkeTmLFwqz-ppkWUWv9Q1_c07eRBd00UjA3_ZD_BOVinfXy6rdQRu37kGVAqXQS1ouQO_H3Uu5JpnW1RvmSAJQvQSQovrgWOuN2qGMCxJCSGKGu4jXacpmOx1U0SgjydGM1K7ICzaQvE6jxWHl0-n_sznPLAXtAPETDWJ51gywpIyoF80c-joj-eSnH8VrID0PW43dvItksQGmQOgW9rWyQrZxMoCoo4oWHjD2L2VY1RBCBL9oOc6QK2TB4C3eZtaaNam_kPkGMTbyeP-yFcA159HmVAzxTKiaSwZT177TAvtgMoOnDpP_I';
+Ext.Ajax.setDefaultHeaders({
+'Content-type': 'application/json',
+        'Authorization': 'Bearer ' + sToken
+})
+                                
 Ext.application({
     name: 'Lawyers and Customers',
 
@@ -62,10 +66,10 @@ Ext.application({
                                     url: '/api/v1/me',
                                     success: function (res) {
                                         res = Ext.decode(res.responseText);
-                                        if (res.type == 'customer') {
+                                        if (res.data.type == 'customer') {
                                             me.getCustomerWindow();
                                         }
-                                        if (res.type == 'lawyer') {
+                                        if (res.data.type == 'lawyer') {
                                             me.getLawyerWindow();
                                         }
                                         win.hide();
@@ -196,7 +200,8 @@ Ext.application({
     },
 
     getCustomerWindow: function(){
-        
+        var oModule = new CustomerWindow();
+        oModule.createWindow();
     },
     
     getLawyerWindow: function(){

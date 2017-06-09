@@ -20,8 +20,9 @@ Route::post('/users/register', 'UsersController@register');
 
 Route::group(['prefix' => 'api/v1', 'middleware' => 'auth:api'], function () {
     Route::get('me', 'UsersController@me');
+    Route::get('users/lawyers', 'UsersController@lawyers');
     // note: put resource routes at the end of the list
-//    Route::resource('users', 'UsersController', ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
+    Route::resource('appointments', 'AppointmentsController', ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
 });
 
 

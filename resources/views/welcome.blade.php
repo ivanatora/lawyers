@@ -15,6 +15,7 @@
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/extjs/6.0.0/ext-all-debug.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/extjs/6.0.0/classic/theme-triton/theme-triton-debug.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/extjs/6.0.0/packages/charts/classic/charts-debug.js"></script>
+        <script type="text/javascript" src="/js/customer.js"></script>
         <script type="text/javascript" src="/js/main.js"></script>
     </body>
 </html>

@@ -17,7 +17,7 @@ class TestController extends Controller
         $oUser             = new User();
         $oUser->first_name = 'Lawyer';
         $oUser->last_name  = 'Lawyer';
-        $oUser->email      = 'lawyer';
+        $oUser->email      = 'lawyer@test.com';
         $oUser->password   = Hash::make('lawyer');
         $oUser->type       = 'lawyer';
         $oUser->save();
@@ -25,7 +25,7 @@ class TestController extends Controller
         $oUser             = new User();
         $oUser->first_name = 'Customer';
         $oUser->last_name  = 'Customer';
-        $oUser->email      = 'customer';
+        $oUser->email      = 'customer@test.com';
         $oUser->password   = Hash::make('customer');
         $oUser->type       = 'customer';
         $oUser->save();
