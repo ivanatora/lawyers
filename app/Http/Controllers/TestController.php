@@ -12,13 +12,20 @@ use DB;
 class TestController extends Controller
 {
 
- 
-    public function create_admin()
+    public function test()
     {
-        $oUser           = new User();
-        $oUser->name     = 'Admin';
-        $oUser->email    = 'admin@admin.com';
-        $oUser->password = Hash::make('test123');
+        $oUser             = new User();
+        $oUser->first_name = 'Lawyer';
+        $oUser->last_name  = 'Lawyer';
+        $oUser->email      = 'lawyer';
+        $oUser->password   = Hash::make('lawyer');
+        $oUser->save();
+
+        $oUser             = new User();
+        $oUser->first_name = 'Customer';
+        $oUser->last_name  = 'Customer';
+        $oUser->email      = 'customer';
+        $oUser->password   = Hash::make('customer');
         $oUser->save();
     }
 }
