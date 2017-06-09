@@ -45,18 +45,18 @@ class AppointmentsController extends Controller
 //        }
 
         $aWhere     = [];
-        $aQueryData = $request->all();
-        foreach ($aQueryData as $sKey => $sValue) {
-            if (preg_match('/^query_(.+?)$/', $sKey, $aMatches)) {
-                $sField = $aMatches[1];
-                if (!in_array($sField, $this->aAllowedFields)) continue;
-                if (preg_match('/_id$/', $sField)) {
-                    $aWhere[] = [$sField, '=', $sValue];
-                } else {
-                    $aWhere[] = [$sField, 'LIKE', '%'.$sValue.'%'];
-                }
-            }
-        }
+//        $aQueryData = $request->all();
+//        foreach ($aQueryData as $sKey => $sValue) {
+//            if (preg_match('/^query_(.+?)$/', $sKey, $aMatches)) {
+//                $sField = $aMatches[1];
+//                if (!in_array($sField, $this->aAllowedFields)) continue;
+//                if (preg_match('/_id$/', $sField)) {
+//                    $aWhere[] = [$sField, '=', $sValue];
+//                } else {
+//                    $aWhere[] = [$sField, 'LIKE', '%'.$sValue.'%'];
+//                }
+//            }
+//        }
 
         if ($oUser->type == 'customer') {
             $aWhere[] = ['customer_user_id', '=', $oUser->id];
@@ -65,11 +65,11 @@ class AppointmentsController extends Controller
             $aWhere[] = ['lawyer_user_id', '=', $oUser->id];
         }
 
-        $sQueryGeneral = $request->input('query_general');
-        if ($sQueryGeneral) {
-            $query->where(function($q) use ($sQueryGeneral) {
-                $q->where('title', 'LIKE', '%'.$sQueryGeneral.'%');
-//                $q->orWhere('last_name', 'LIKE', '%'.$sQueryGeneral.'%');
+        $sQueryLawyer = $request->input('query_lawyer');
+        if ($sQueryLawyer) {
+            $query->where(function($q) use ($sQueryLawyer) {
+                $q->where('l.first_name', 'LIKE', '%'.$sQueryLawyer.'%');
+                $q->orWhere('l.last_name', 'LIKE', '%'.$sQueryLawyer.'%');
             });
         }
 //        Log::info(['w' => $aWhere, 'qd' => $aQueryData]);
@@ -194,7 +194,7 @@ class AppointmentsController extends Controller
         $oUser = User::whereId(Auth::user()->id)->first();
 
         $aWhere = [
-            'id', '=', $id
+            ['id', '=', $id]
         ];
         // allow access to only his own records
         if ($oUser->type == 'customer') {
@@ -204,7 +204,7 @@ class AppointmentsController extends Controller
             $aWhere[] = ['lawyer_user_id', '=', $oUser->id];
         }
 
-        $oRecord = Appointment::where($aWhere)->get();
+        $oRecord = Appointment::where($aWhere)->first();
         if (!$oRecord) {
             return response()->json(['success' => false, 'error' => 'Record not found']);
         }
