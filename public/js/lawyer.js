@@ -23,7 +23,11 @@ Ext.define('LawyerWindow', {
 
         if (!me.store) {
             me.store = Ext.create('Ext.data.Store', {
-                fields: ['customer_user_id', 'lawyer_user_id', 'status', 'lawyer_names', 'schedule_date', 'schedule_time'],
+                fields: [
+                    'customer_user_id', 'lawyer_user_id', 'status', 
+                    'lawyer_names', 'schedule_date', 'schedule_time',
+                    'is_conflicting'
+                ],
                 pageSize: 5,
                 proxy: {
                     type: 'ajax',
@@ -51,6 +55,28 @@ Ext.define('LawyerWindow', {
             me.grid = Ext.create('Ext.grid.Panel', {
                 store: me.getStore(),
                 columns: [
+                    {
+                        xtype: 'actioncolumn',
+                        width: 24,
+                        items: [
+                            {
+                                getClass: function(v, meta, rec){
+                                    if (rec.get('is_conflicting')) {
+                                        return 'x-fa fa-exclamation-triangle';
+                                    }
+                                    return false;
+                                },
+                                handler: function(grid, rowIndex, colIndex){
+                                    var rec = grid.getStore().getAt(rowIndex);
+                                    if (rec.get('is_conflicting')) {
+                                        Ext.Msg.alert('Conflict', 'This appointment conflicts with another one. Please, change the date or time.', function(){
+                                            me.getAddEditWindow(rec.data);
+                                        });
+                                    }
+                                }
+                            }
+                        ]
+                    },
                     {text: 'Customer', dataIndex: 'customer_names', flex: 1},
                     {text: 'For Date', dataIndex: 'schedule_date', width: 100, renderer: me.renderDate},
                     {text: 'At', dataIndex: 'schedule_time', width: 80, renderer: me.renderTime},

@@ -43,9 +43,6 @@ class AppointmentsController extends Controller
                 }
             }
         }
-//        else {
-//            $query = Appointment::orderBy($aOrder['field'], $aOrder['direction']);
-//        }
 
         $aWhere = [];
 //        $aQueryData = $request->all();
@@ -105,8 +102,18 @@ class AppointmentsController extends Controller
         foreach ($tmp as $idx => $item) {
             $tmp[$idx]->customer_names = $item->customer->first_name.' '.$item->customer->last_name;
             $tmp[$idx]->lawyer_names   = $item->lawyer->first_name.' '.$item->lawyer->last_name;
+
+            $bIsConflicting = 0;
+            if ($oUser->type == 'lawyer' && $item->status != 'rejected') {
+                $bIsConflicting = Appointment::where([
+                    ['id', '!=', $item->id],
+                    ['lawyer_user_id', '=', $oUser->id],
+                    ['schedule_date', '=', $item->schedule_date],
+                    ['schedule_time', '=', $item->schedule_time],
+                ])->whereIn('status', ['new', 'approved'])->count();
+            }
+            $tmp[$idx]->is_conflicting = $bIsConflicting;
         }
-//        Log::info($tmp->toArray());
 
         return response()->json(['success' => true, 'total' => $iTotal, 'data' => $tmp]);
     }
