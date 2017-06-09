@@ -18,19 +18,31 @@ class AppointmentsController extends Controller
     {
         $oUser = User::whereId(Auth::user()->id)->first();
 
-        $aOrder     = [
+        $query = Appointment::select('appointments.*');
+        $query->join('users as l', 'l.id', '=', 'lawyer_user_id');
+        $query->join('users as c', 'c.id', '=', 'customer_user_id');
+
+        $aOrder   = [
             'field' => 'id',
             'direction' => 'asc'
         ];
-        $sSortField = $request->input('sort_field');
-        if ($sSortField && in_array($sSortField, $this->aAllowedFields)) {
-            $aOrder['field'] = $sSortField;
+        $aSorters = $request->input('sort', '');
+        if (!empty($aSorters)) {
+            $aSorters = json_decode($aSorters, true);
+            if (count($aSorters) > 0) {
+                if ($aSorters[0]['property'] == 'lawyer_names') {
+                    $query->orderBy('l.first_name', $aSorters[0]['direction']);
+                    $query->orderBy('l.last_name', $aSorters[0]['direction']);
+                } else {
+                    $aOrder['field']     = $aSorters[0]['property'];
+                    $aOrder['direction'] = $aSorters[0]['direction'];
+                    $query->orderBy($aOrder['field'], $aOrder['direction']);
+                }
+            }
         }
-        $sSortDir = $request->input('sort_dir');
-        if ($sSortDir && in_array($sSortDir, ['asc', 'desc'])) {
-            $aOrder['direction'] = $sSortDir;
-        }
-        $query = Appointment::orderBy($aOrder['field'], $aOrder['direction']);
+//        else {
+//            $query = Appointment::orderBy($aOrder['field'], $aOrder['direction']);
+//        }
 
         $aWhere     = [];
         $aQueryData = $request->all();
@@ -76,13 +88,14 @@ class AppointmentsController extends Controller
         }
 
 //        DB::enableQueryLog();
-        $tmp = $query->with('customer', 'lawyer')->get();
+        $tmp = $query->with('lawyer', 'customer')->get();
 //        Log::info(DB::getQueryLog());
         // add some virtual fields
         foreach ($tmp as $idx => $item) {
             $tmp[$idx]->customer_names = $item->customer->first_name.' '.$item->customer->last_name;
             $tmp[$idx]->lawyer_names   = $item->lawyer->first_name.' '.$item->lawyer->last_name;
         }
+//        Log::info($tmp->toArray());
 
         return response()->json(['success' => true, 'total' => $iTotal, 'data' => $tmp]);
     }

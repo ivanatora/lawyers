@@ -80,6 +80,20 @@ Ext.define('CustomerWindow', {
                             
                             me.getAddEditWindow(aSelection[0].data);
                         }
+                    },
+                    '-',
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: 'Search',
+                        enableKeyEvents: true,
+                        listeners: {
+                            buffer: 1000,
+                            keyup: function(cmp) {
+                                var val = cmp.getValue();
+                                me.getStore().getProxy().extraParams.query_general = val;
+                                me.getStore().loadPage(0);
+                            }
+                        }
                     }
                 ]
             })
